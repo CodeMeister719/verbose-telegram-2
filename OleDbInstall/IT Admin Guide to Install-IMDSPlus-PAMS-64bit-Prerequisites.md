@@ -15,13 +15,13 @@ This application depends on several Microsoft‑provided runtime components that
 ### 2. Visual C++ Redistributable (x64 – 64-bit)
 
 **What it is:** Runtime libraries for 64-bit applications  
-**What it's for:** Provides the 64-bit runtime environment required by MS OLE DB Driver.
+**What it's for:** Provides the 64-bit runtime environment required by MS OLE DB Driver.   
 **File:** `vc_redist.x64.exe` (~14 MB)
 
 ### 3. Microsoft OLE DB Driver 19 for SQL Server (x64)
 
 **What it is:** Database connectivity driver  
-**What it's for:** Installs both 64-bit and 32-bit MS OLE DB driver components to enable IMDSPlus-PAMS 64-bit to establish secure connections to SQL Server databases for data retrieval and transactions  
+**What it's for:** Installs both 64-bit and 32-bit MS OLE DB driver components to enable IMDSPlus-PAMS 64-bit to establish secure connections to SQL Server databases for data retrieval and transactions.  
 **File:** `msoledbsql19.msi` (~64 MB)
 
 These components must be installed prior to running the application to ensure proper database connectivity and runtime stability.
