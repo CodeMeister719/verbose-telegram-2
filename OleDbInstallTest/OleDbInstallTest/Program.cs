@@ -83,6 +83,10 @@ namespace OleDbInstallTest
             string connectionString = GetConnectionStringFromApi(token, apiUrl);
             LogMessage($"Retrieved connection string from API");
 
+            // Get execution context
+            var (computerName, userName) = GetExecutionContext();
+            LogMessage($"Running on {computerName} as {userName}");
+
             string sql = @"INSERT INTO log_table 
                            SELECT 'XX', bus_id, 'user1' AS user_id, NULL AS ecode, 
                                   'Install test' AS msg, GETDATE() AS enter_dttm";
@@ -162,6 +166,13 @@ namespace OleDbInstallTest
                 // If logging fails, write to console but don't throw
                 Console.WriteLine($"Warning: Could not write to log file: {ex.Message}");
             }
+        }
+
+        private static (string ComputerName, string UserName) GetExecutionContext()
+        {
+            string computerName = Environment.MachineName;
+            string userName = Environment.UserName;
+            return (computerName, userName);
         }
     }
 }
