@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Installer binaries - keep locally but do not push to repo
+*.exe
+*.msi
