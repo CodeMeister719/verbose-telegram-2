@@ -365,3 +365,4 @@ FodyWeavers.xsd
 # Installer binaries - keep locally but do not push to repo
 *.exe
 *.msi
+*.dll
