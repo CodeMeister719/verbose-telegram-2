@@ -23,7 +23,9 @@ These components ensure the application can run correctly and connect to SQL Ser
 
 # 1. Install .NET 8 Desktop Runtime (Windows Only)
 
-IMDSPlus/PAMS requires the **.NET 8 Desktop Runtime** to run on Windows PCs.
+IMDSPlus/PAMS requires the **.NET 8 Desktop Runtime** to run on Windows PCs. 
+> Newer version of .NET (such as .NET 9 or .NET 10) do not include .NET 8 and will not run IMDSPlus/PAMS.   
+> Please ensure you install .NET 8 Desktop Runtime (8.x.x)
 
 ## Step 1 — Download the Runtime
 
@@ -34,9 +36,13 @@ Download from the official Microsoft site:
 
 On the page, scroll to **Run apps – Runtime** and select:
 
-- **.NET Desktop Runtime 8.x.x (x64)** — for most Windows 10/11 PCs  
+- **.NET Desktop Runtime 8.x.x (x64)**  
 
-> ⚠️ Make sure you choose **Desktop Runtime**, not the SDK or ASP.NET Runtime.
+> ⚠️ Make sure you choose **Desktop Runtime**, not the SDK or ASP.NET Runtime.   
+
+Direct download link to .NET Desktop Runtime 8.0.26:   
+`https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.26-windows-x64-installer`
+
 
 ## Step 2 — Install the Runtime
 
@@ -116,21 +122,21 @@ After installing the OLE DB Driver, **restart your computer** to ensure all comp
 
 # Troubleshooting
 
-### **“Access Denied” or “Administrator Required”**
-- The installer must be run as Administrator  
-- Contact IT Support if you cannot elevate permissions  
+**“Access Denied” or “Administrator Required”**
+- The installer must be run as Administrator.  
+- Contact IT Support if you cannot elevate permissions.  
 
-### **Installer Hangs or Freezes**
-- Another installation or Windows Update may be running  
-- Restart your computer and try again  
+**Installer Hangs or Freezes**
+- Another installation or Windows Update may be running.  
+- Restart your computer and try again.  
 
-### **Components Not Detected After Installation**
-- A system restart may be required  
-- Restart and verify again  
+**Components Not Detected After Installation**
+- A system restart may be required.  
+- Restart and verify again.  
 
-### **“Repair” Option Appears**
-- This means the component is already installed  
-- You may continue with the next step  
+**“Repair” Option Appears**
+- This means the component is already installed..  
+- You may continue with the next step.  
 
 ---
 
@@ -139,7 +145,7 @@ After installing the OLE DB Driver, **restart your computer** to ensure all comp
 If you encounter issues or do not have administrator privileges, contact your IT Support team.  
 Provide:
 
-- A screenshot or description of the error  
+- A screenshot or description of the error. 
 
 Send this information to **REJIS IMDSPlus/PAMS support** for further assistance.
 
