@@ -206,86 +206,88 @@ function Invoke-ScannerApplication {
 }
 
 # ============================================================================
-# STEP 3: DETECT SCANNER DRIVERS
+# STEP 3.1: DETECT SCANNER DRIVERS
 # ============================================================================
 
 function Get-ScannerDrivers {
-    Write-Host "`n========== STEP 3: SCANNER DRIVER INVENTORY ==========" -ForegroundColor Cyan
-    Write-LogEntry "`n=== STEP 3: SCANNER DRIVER INVENTORY ===" "INFO"
+    Write-Host "`n========== STEP 3.1: SCANNER DRIVER INVENTORY ==========" -ForegroundColor Cyan
+    Write-LogEntry "`n=== STEP 3.1: SCANNER DRIVER INVENTORY ===" "INFO"
     Write-LogEntry "Detecting installed scanner drivers..." "INFO"
     
     $Drivers = @()
     
-    # Detect TWAIN 32-bit drivers
-    Write-LogEntry "Scanning for TWAIN 32-bit drivers..." "INFO"
-    $Twain32Path = "HKLM:\Software\TWAIN_SYSTEM\TWAIN"
-    if (Test-Path $Twain32Path) {
+    # Detect TWAIN 32-bit drivers via filesystem
+    Write-LogEntry "Scanning for TWAIN 32-bit drivers in C:\Windows\twain_32..." "INFO"
+    $Twain32Root = "C:\Windows\twain_32"
+    if (Test-Path $Twain32Root) {
         try {
-            $Twain32Items = Get-ChildItem -Path $Twain32Path -ErrorAction SilentlyContinue
-            if ($Twain32Items) {
-                foreach ($Item in $Twain32Items) {
-                    $DriverName = $Item.PSChildName
-                    $Manufacturer = (Get-ItemProperty -Path $Item.PSPath -Name "Manufacturer" -ErrorAction SilentlyContinue).Manufacturer
-                    $DriverVersion = (Get-ItemProperty -Path $Item.PSPath -Name "Version" -ErrorAction SilentlyContinue).Version
-                    $ProductName = (Get-ItemProperty -Path $Item.PSPath -Name "ProductName" -ErrorAction SilentlyContinue).ProductName
-                    $ProductFamily = (Get-ItemProperty -Path $Item.PSPath -Name "ProductFamily" -ErrorAction SilentlyContinue).ProductFamily
-                    
+            Get-ChildItem $Twain32Root -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+                $DsFiles = Get-ChildItem $_.FullName -Filter *.ds -File -ErrorAction SilentlyContinue
+                foreach ($Ds in $DsFiles) {
+                    $FileVersion = (Get-Item $Ds.FullName).VersionInfo
                     $Driver = [PSCustomObject]@{
-                        Type = "TWAIN 32-bit"
-                        "Driver Name" = $DriverName
-                        "Manufacturer" = $Manufacturer
-                        "Driver Version" = $DriverVersion
-                        "Product Name" = $ProductName
-                        "Product Family" = $ProductFamily
+                        Type             = "TWAIN 32-bit"
+                        "Driver Name"    = $Ds.Name
+                        "Manufacturer"   = $FileVersion.CompanyName
+                        "Driver Version" = $FileVersion.ProductVersion
+                        "Product Name"   = $FileVersion.ProductName
+                        "Product Family" = ""
+                        "File Version"   = $FileVersion.FileVersion
+                        "Path"           = $Ds.FullName
                     }
                     $Drivers += $Driver
-                    Write-LogEntry "  Found TWAIN 32-bit: $DriverName" "INFO"
-                    Write-LogEntry "    Manufacturer: $Manufacturer" "INFO"
-                    Write-LogEntry "    Driver Version: $DriverVersion" "INFO"
-                    Write-LogEntry "    Product Name: $ProductName" "INFO"
-                    Write-LogEntry "    Product Family: $ProductFamily" "INFO"
+                    Write-LogEntry "  Found TWAIN 32-bit: $($Ds.Name)" "INFO"
+                    Write-LogEntry "    Manufacturer: $($FileVersion.CompanyName)" "INFO"
+                    Write-LogEntry "    Product Version: $($FileVersion.ProductVersion)" "INFO"
+                    Write-LogEntry "    File Version: $($FileVersion.FileVersion)" "INFO"
+                    Write-LogEntry "    Product Name: $($FileVersion.ProductName)" "INFO"
+                    Write-LogEntry "    Path: $($Ds.FullName)" "INFO"
                 }
             }
         }
         catch {
-            Write-LogEntry "  Error scanning TWAIN 32-bit registry: $_" "WARNING"
+            Write-LogEntry "  Error scanning TWAIN 32-bit drivers: $_" "WARNING"
         }
     }
-    
-    # Detect TWAIN 64-bit drivers
-    Write-LogEntry "Scanning for TWAIN 64-bit drivers..." "INFO"
-    $Twain64Path = "HKLM:\Software\WOW6432Node\TWAIN_SYSTEM\TWAIN"
-    if (Test-Path $Twain64Path) {
+    else {
+        Write-LogEntry "  TWAIN 32-bit folder not found: $Twain32Root" "WARNING"
+    }
+
+    # Detect TWAIN 64-bit drivers via filesystem
+    Write-LogEntry "Scanning for TWAIN 64-bit drivers in C:\Windows\twain_64..." "INFO"
+    $Twain64Root = "C:\Windows\twain_64"
+    if (Test-Path $Twain64Root) {
         try {
-            $Twain64Items = Get-ChildItem -Path $Twain64Path -ErrorAction SilentlyContinue
-            if ($Twain64Items) {
-                foreach ($Item in $Twain64Items) {
-                    $DriverName = $Item.PSChildName
-                    $Manufacturer = (Get-ItemProperty -Path $Item.PSPath -Name "Manufacturer" -ErrorAction SilentlyContinue).Manufacturer
-                    $DriverVersion = (Get-ItemProperty -Path $Item.PSPath -Name "Version" -ErrorAction SilentlyContinue).Version
-                    $ProductName = (Get-ItemProperty -Path $Item.PSPath -Name "ProductName" -ErrorAction SilentlyContinue).ProductName
-                    $ProductFamily = (Get-ItemProperty -Path $Item.PSPath -Name "ProductFamily" -ErrorAction SilentlyContinue).ProductFamily
-                    
+            Get-ChildItem $Twain64Root -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+                $DsFiles = Get-ChildItem $_.FullName -Filter *.ds -File -ErrorAction SilentlyContinue
+                foreach ($Ds in $DsFiles) {
+                    $FileVersion = (Get-Item $Ds.FullName).VersionInfo
                     $Driver = [PSCustomObject]@{
-                        Type = "TWAIN 64-bit"
-                        "Driver Name" = $DriverName
-                        "Manufacturer" = $Manufacturer
-                        "Driver Version" = $DriverVersion
-                        "Product Name" = $ProductName
-                        "Product Family" = $ProductFamily
+                        Type             = "TWAIN 64-bit"
+                        "Driver Name"    = $Ds.Name
+                        "Manufacturer"   = $FileVersion.CompanyName
+                        "Driver Version" = $FileVersion.ProductVersion
+                        "Product Name"   = $FileVersion.ProductName
+                        "Product Family" = ""
+                        "File Version"   = $FileVersion.FileVersion
+                        "Path"           = $Ds.FullName
                     }
                     $Drivers += $Driver
-                    Write-LogEntry "  Found TWAIN 64-bit: $DriverName" "INFO"
-                    Write-LogEntry "    Manufacturer: $Manufacturer" "INFO"
-                    Write-LogEntry "    Driver Version: $DriverVersion" "INFO"
-                    Write-LogEntry "    Product Name: $ProductName" "INFO"
-                    Write-LogEntry "    Product Family: $ProductFamily" "INFO"
+                    Write-LogEntry "  Found TWAIN 64-bit: $($Ds.Name)" "INFO"
+                    Write-LogEntry "    Manufacturer: $($FileVersion.CompanyName)" "INFO"
+                    Write-LogEntry "    Product Version: $($FileVersion.ProductVersion)" "INFO"
+                    Write-LogEntry "    File Version: $($FileVersion.FileVersion)" "INFO"
+                    Write-LogEntry "    Product Name: $($FileVersion.ProductName)" "INFO"
+                    Write-LogEntry "    Path: $($Ds.FullName)" "INFO"
                 }
             }
         }
         catch {
-            Write-LogEntry "  Error scanning TWAIN 64-bit registry: $_" "WARNING"
+            Write-LogEntry "  Error scanning TWAIN 64-bit drivers: $_" "WARNING"
         }
+    }
+    else {
+        Write-LogEntry "  TWAIN 64-bit folder not found: $Twain64Root" "WARNING"
     }
     
     # Detect WIA (Windows Image Acquisition) drivers
@@ -343,6 +345,41 @@ function Get-ScannerDrivers {
     }
     
     return $Drivers
+}
+
+# ============================================================================
+# STEP 3.2: DETECT PAPERSTREAM IP SOFTWARE
+# ============================================================================
+
+function Get-PaperStreamSoftware {
+    Write-Host "`n========== STEP 3.2: PAPERSTREAM IP SOFTWARE ==========" -ForegroundColor Cyan
+    Write-LogEntry "`n=== STEP 3.2: PAPERSTREAM IP SOFTWARE ===" "INFO"
+    Write-LogEntry "Searching for PaperStream IP in installed software..." "INFO"
+
+    $Results = @()
+
+    try {
+        $Entries = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" -ErrorAction SilentlyContinue |
+            Where-Object { $_.DisplayName -like "*PaperStream IP*" } |
+            Select-Object DisplayName, DisplayVersion
+
+        foreach ($Entry in $Entries) {
+            $Results += $Entry
+            Write-LogEntry "  Found: $($Entry.DisplayName) - Version: $($Entry.DisplayVersion)" "INFO"
+        }
+    }
+    catch {
+        Write-LogEntry "  Error querying Uninstall registry: $_" "WARNING"
+    }
+
+    if ($Results.Count -eq 0) {
+        Write-LogEntry "  No PaperStream IP software found." "INFO"
+    }
+    else {
+        Write-LogEntry "  Total PaperStream IP entries found: $($Results.Count)" "INFO"
+    }
+
+    return $Results
 }
 
 # ============================================================================
@@ -425,6 +462,7 @@ function Main {
     Invoke-FileCleanup
     Invoke-ScannerApplication
     Get-ScannerDrivers
+    Get-PaperStreamSoftware
     Invoke-OpenOutputFiles
     
     Write-LogEntry "================================================" "INFO"
