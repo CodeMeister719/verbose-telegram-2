@@ -1,0 +1,80 @@
+================================================================================
+                    SCAN DIAGNOSTICS SPECIFICATION
+================================================================================
+
+OVERVIEW
+--------
+PowerShell script for Windows 11 diagnostic scanning with PDF output and driver 
+inventory. Script must be compatible with common PowerShell versions (not requiring 
+latest version).
+
+================================================================================
+ENVIRONMENT VARIABLES & PATHS
+================================================================================
+
+Output Directory:
+  Base Path: %TEMP%\REJIS\IMDSPlus\
+  Output PDF: %TEMP%\REJIS\IMDSPlus\scan-diagnostics.pdf
+  Output Log: %TEMP%\REJIS\IMDSPlus\scan-diagnostics.log
+  Output JSON: %TEMP%\REJIS\IMDSPlus\scan-diagnostics.json
+
+Note: %TEMP% and %PUBLIC% system variables must be parsed and interpreted to 
+      construct the complete file paths.
+
+Scanner Application Path:
+  "%PUBLIC%\AppData\Local\REJIS\IMDSPlus\plus_prod_x64\ScannerApp_x64.exe"
+
+================================================================================
+EXECUTION WORKFLOW
+================================================================================
+
+STEP 1: File Cleanup
+  - Delete all existing files matching: "%TEMP%\REJIS\IMDSPlus\scan-diagnostics.*"
+  - This clears previous scan outputs before running new diagnostics
+
+STEP 2: Execute Scanner Application
+  - Command: "%PUBLIC%\AppData\Local\REJIS\IMDSPlus\plus_prod_x64\ScannerApp_x64.exe"
+  - Parameters:
+    * --output "%TEMP%\REJIS\IMDSPlus\scan-diagnostics.pdf"
+    * --bitdepth color
+    * --dpi 300
+    * --pagesize letter
+    * --source duplex
+  
+  Note: ScannerApp_x64.exe automatically generates:
+        - scan-diagnostics.log (application log)
+        - scan-diagnostics.json (application output)
+
+STEP 3: Scanner Driver Inventory
+  - Detect and list all installed scanner drivers:
+    * TWAIN 32-bit drivers
+    * TWAIN 64-bit drivers
+    * WIA (Windows Image Acquisition) drivers
+  - Append driver inventory results to: scan-diagnostics.log
+  - Include a line separator between application log and driver inventory
+
+STEP 4: Open Output Files
+  - Open log file in default text editor: scan-diagnostics.log
+    (Log filename matches --output PDF name with .log extension)
+  - Open JSON file in Notepad: scan-diagnostics.json
+    (JSON filename matches --output PDF name with .json extension)
+  - Open PDF file with default PDF viewer: scan-diagnostics.pdf
+    (Use "start" command to launch)
+
+================================================================================
+OUTPUT FILES SUMMARY
+================================================================================
+
+1. scan-diagnostics.pdf
+   - Primary output: Scanned diagnostic document
+   - Format: PDF, Color, 300 DPI, Letter size, Duplex
+
+2. scan-diagnostics.log
+   - Application execution log
+   - Scanner driver inventory details
+   - Sections separated by line breaks
+
+3. scan-diagnostics.json
+   - Structured application data output
+
+================================================================================ 
