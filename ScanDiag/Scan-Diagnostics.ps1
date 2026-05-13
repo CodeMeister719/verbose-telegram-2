@@ -465,6 +465,20 @@ function Main {
     Get-PaperStreamSoftware
     Invoke-OpenOutputFiles
     
+    # Return PowerShell host to foreground
+    Add-Type -Name Window -Namespace Console -MemberDefinition '
+    [DllImport("Kernel32.dll")]
+    public static extern IntPtr GetConsoleWindow();
+
+    [DllImport("User32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool SetForegroundWindow(IntPtr hWnd);
+    '
+    
+    $ConsoleWindow = [Console.Window]::GetConsoleWindow()
+    [Console.Window]::SetForegroundWindow($ConsoleWindow) | Out-Null
+    Write-LogEntry "PowerShell console returned to foreground." "INFO"
+    
     Write-LogEntry "================================================" "INFO"
     Write-LogEntry "Scan Diagnostics Script Completed: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" "SUCCESS"
     
